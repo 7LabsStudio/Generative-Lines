@@ -21,16 +21,26 @@ In general, the lines are drawn in 3 steps:
 
 This is a simple example of drawing a 30 pixel wide line that has slightly jagged edges.  
 
-`Line l = new Line(DistortType.GAUSSIAN, 30);`  
-`l.variance = .5;`  
-`l.alpha = 30;`  
-`l.draw(200, 100, 200, 500);`  
+    Line l = new Line(DistortType.GAUSSIAN, 30);
+    l.variance = .5;
+    l.alpha = 30;
+    l.draw(200, 100, 200, 500);
 
 Which produces the following image:  
 
-<a>![sth](https://raw.githubusercontent.com/sighack/watercolor-simulation/master/images/1.png)</a>
+<a>![example 1](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/1.png)</a>
+
+Once we have a Line object, it can be used to draw multiple lines of the same kind:
+
+    Line l1 = new Line(DistortType.GAUSSIAN, 10);
+    l1.variance = .5;
+    l1.alpha = 30;
+    l1.draw(200, 100, 200, 500);
+    l1.draw(205, 495, 500, 500);
+    l1.draw(495, 495, 495, 100);
+    l1.draw(495, 100, 200, 100)
 
 
-
+<a>![example 2](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/2.png)</a>
 
 # Examples
