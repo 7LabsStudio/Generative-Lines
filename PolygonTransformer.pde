@@ -337,3 +337,14 @@ class PolygonTransformer {
 float sign(float x) {
     return x > 0 ? 1 : -1;
 }
+
+/**
+ * Enum that contains various ways of distorting a polygon.
+ */
+enum DistortType {
+    GAUSSIAN,
+    GAUSSIAN_BIASED,
+    DRIFT,
+    SHRINK,
+    AXIS_SHRINK
+}

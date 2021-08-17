@@ -27,11 +27,25 @@ class PolygonFactory {
         
         rectangle.add(PVector.add(end, temp));
         rectangle.add(PVector.add(start, temp));
-        
 
         return new Polygon(rectangle);
     }
     
+    /**
+     * Creates a rectangle that goes from (x1, y1) to (x2, y2) and has given
+     * width.
+     *
+     * @param  x1       start point x coordinate
+     * @param  y1       start point y coordinate
+     * @param  x2       end point x coordinate
+     * @param  y2       end point y coordinate
+     * @param  width    rectangle width
+     * @return          polygon in the shape of rectangle
+     */
+    Polygon createRectangle(float x1, float y1, float x2, float y2, float width) {
+        return createRectangle(new PVector(x1, y1), new PVector(x2, y2), width);
+    }
+
     /**
      * Creates a regular n-gon centered at center with a given radius.
      *
