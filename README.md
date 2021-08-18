@@ -21,7 +21,7 @@ In general, the lines are drawn in 3 steps:
 
 This is a simple example of drawing a 30 pixel wide line that has slightly jagged edges.  
 
-    Line l = new Line(DistortType.GAUSSIAN, 30);
+    Line l = new Line(DistortType.UNIFORM, 30);
     l.variance = .5;
     l.alpha = 30;
     l.draw(200, 100, 200, 500);
@@ -32,7 +32,7 @@ Which produces the following image:
 
 Once we have a Line object, it can be used to draw multiple lines of the same kind:
 
-    Line l1 = new Line(DistortType.GAUSSIAN, 10);
+    Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
     l1.alpha = 30;
     l1.draw(200, 100, 200, 500);
@@ -50,11 +50,11 @@ Once we have a Line object, it can be used to draw multiple lines of the same ki
 When creating the `Line` object, we need to specify the `distortType` of the line.
 In order to understand what this parameter does, one needs to know how this class actually draws the lines.
 `Line` objects are drawn by drawing a certain number of rectangles on top of each other, each being a slightly distorted version of the previous one. `lineDistort` parameter determines the type of polygon distortion that takes place in this step.
-Currently, the following distortion types are implemented:
+All distortion algorithms move the points of the input polygon randomly about their original location, and the type of random distribution used is gaussian distribution. The difference between each type of distribution lies in the direction in which the distorted points tend to move:
 
-- Gaussian
-- Biased gaussian
-- Drift distort
-- Shrink along axis
+- Uniform distortion - no preference for any particular direction
+- Point biased distortion - prefers the direction towards the bias point
+- Vector biased distortion - prefers the direction in the direction of some vector
+- Axis biased distortion - prefers the direction of 90° towards some line
 
 # Examples
