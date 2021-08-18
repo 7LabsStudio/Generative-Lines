@@ -43,4 +43,18 @@ Once we have a Line object, it can be used to draw multiple lines of the same ki
 
 <a>![example 2](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/2.png)</a>
 
+# `Line` class
+
+## Distort type
+
+When creating the `Line` object, we need to specify the `distortType` of the line.
+In order to understand what this parameter does, one needs to know how this class actually draws the lines.
+`Line` objects are drawn by drawing a certain number of rectangles on top of each other, each being a slightly distorted version of the previous one. `lineDistort` parameter determines the type of polygon distortion that takes place in this step.
+Currently, the following distortion types are implemented:
+
+- Gaussian
+- Biased gaussian
+- Drift distort
+- Shrink along axis
+
 # Examples
