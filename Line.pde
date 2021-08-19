@@ -12,7 +12,8 @@ class Line {
     float lineWidth;
     float alpha = 100;
     float variance = 3;
-    float distCoeff = 0;
+    float relDistCoeff = 0.1;
+    float absDistCoeff = 4;
     int depth = 15;
     boolean odd = false;
     
@@ -32,22 +33,22 @@ class Line {
                     throw new NullPointerException("Bias point cannot be null.");
                 }
                 return this.odd ?
-                    pt.pointBiasedDistortOdd(p, variance, bias, distCoeff) :
-                    pt.pointBiasedDistort(p, variance, bias, distCoeff);
+                    pt.pointBiasedDistortOdd(p, variance, bias, relDistCoeff) :
+                    pt.pointBiasedDistort(p, variance, bias, relDistCoeff);
             case VECTOR_BIASED:
-                if (axisStart == null || axisEnd == null) {
-                    throw new NullPointerException("Axis endpoint cannot be null.");
+                if (bias == null) {
+                    throw new NullPointerException("Bias vector cannot be null.");
                 }
                 return this.odd ?
-                    pt.vectorBiasedDistortOdd(p, variance, distCoeff, axisStart, axisEnd) :
-                    pt.vectorBiasedDistort(p, variance, distCoeff, axisStart, axisEnd);
+                    pt.vectorBiasedDistortOdd(p, variance, bias, absDistCoeff) :
+                    pt.vectorBiasedDistort(p, variance, bias, absDistCoeff);
             case AXIS_BIASED:
                 if (axisStart == null || axisEnd == null) {
                     throw new NullPointerException("Axis endpoint cannot be null.");
                 }
                 return this.odd ?
-                    pt.axisBiasedDistortOdd(p, variance, distCoeff, axisStart, axisEnd) :
-                    pt.axisBiasedDistort(p, variance, distCoeff, axisStart, axisEnd);
+                    pt.axisBiasedDistortOdd(p, variance, relDistCoeff, axisStart, axisEnd) :
+                    pt.axisBiasedDistort(p, variance, relDistCoeff, axisStart, axisEnd);
             default:
                return p; 
         }

@@ -13,11 +13,12 @@ void setup() {
     l1.draw(495, 495, 495, 100);
     l1.draw(495, 100, 200, 100);
 
+    /*
     // Example #2
     Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
     l2.alpha = 10;
-    l2.distCoeff = 0.02;
+    l2.relDistCoeff = 0.02;
     l2.bias(600, 400);
     l2.draw(300, 300, 350, 350);
     l2.draw(350, 350, 300, 400);
@@ -35,7 +36,7 @@ void setup() {
     
     // Example #4
     Line l4 = new Line(DistortType.VECTOR_BIASED, 30);
-    l4.distCoeff = -7;
+    l4.absDistCoeff = -7;
     l4.alpha = 30;
     // Left "eye" is drawn with odd == false, and the right with odd == true.
     l4.axis(0, 100, 100, 0);
@@ -46,12 +47,41 @@ void setup() {
 
     // Example #5
     Line l5 = new Line(DistortType.AXIS_BIASED, 60);
-    l5.distCoeff = 5;
+    l5.relDistCoeff = 0.05;
     l5.variance = 2;
     l5.alpha = 30;
     l5.odd = true;
     l5.axis(350, 0, 350, 700);
     l5.draw(350, 500, 350, 630);
+    
+    // Varying distortion method
+    Line l6 = new Line(DistortType.UNIFORM, 30);
+    l6.alpha = 30;
+    l6.variance = 1;
+    l6.draw(200, 100, 200, 300);
+    l6.bias = new PVector(300, 400);
+    l6.relDistCoeff = .05;
+    l6.distortType = DistortType.POINT_BIASED;
+    l6.draw(300, 100, 300, 300);
+    l6.distortType = DistortType.VECTOR_BIASED;
+    l6.draw(400, 100, 400, 300);
+    l6.axis(width, 0, width, height);
+    l6.relDistCoeff = 0.02;
+    l6.distortType = DistortType.AXIS_BIASED;
+    l6.draw(500, 100, 500, 300);
+    
+    // Varying variance example
+    Line l7 = new Line(DistortType.UNIFORM, 30);
+    l7.alpha = 30;
+    l7.variance = 0;
+    l7.draw(200, 100, 200, 300);
+    l7.variance = 0.5;
+    l7.draw(300, 100, 300, 300);
+    l7.variance = 1;
+    l7.draw(400, 100, 400, 300);
+    l7.variance = 2;
+    l7.draw(500, 100, 500, 300);
+    */
 }
 
 void draw() {}

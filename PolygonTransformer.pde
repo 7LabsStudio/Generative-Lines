@@ -142,18 +142,17 @@ class PolygonTransformer {
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
-     * @param biasCoeff amount of preference towards the bias vector
-     * @param start     beginning of the axis vector
-     * @param end       end of the axis vector
+     * @param biasCoeff amount of preference along the bias vector
+     * @param direction direction in which the points are to be biased
      * @return          distorted polygon
      */    
-    Polygon vectorBiasedDistort(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon vectorBiasedDistort(Polygon p, float variance, PVector direction, float biasCoeff) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
             output.add(disturbPoint(new PVector(p.get(i).x, p.get(i).y), variance));
             midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(getDriftVector(start, end).mult(biasCoeff));
+            midpoint.add(direction.setMag(biasCoeff));
             disturbPoint(midpoint, variance);
             output.add(midpoint);
         }
@@ -173,18 +172,18 @@ class PolygonTransformer {
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
-     * @param biasCoeff amount of preference towards the bias vector
+     * @param biasCoeff amount of preference along the bias vector
      * @param start     beginning of the axis vector
      * @param end       end of the axis vector
      * @return          distorted polygon
      */    
-    Polygon vectorBiasedDistortOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon vectorBiasedDistortOdd(Polygon p, float variance, PVector direction, float biasCoeff) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
             output.add(new PVector(p.get(i).x, p.get(i).y));
             midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(getDriftVector(start, end).mult(biasCoeff));
+            midpoint.add(direction.setMag(biasCoeff));
             disturbPoint(midpoint, variance);
             output.add(midpoint);
         }
@@ -268,21 +267,9 @@ class PolygonTransformer {
     }
 
     /**
-     * Returns unit vector in the direction rotated +90 degrees relative to
-     * the vector that goes from start to end points.
-     *
-     * @param start axis vector start position
-     * @param end   axis vector end position
-     * @return      unit vector perpendicular to end - start
-     */
-    PVector getDriftVector(PVector start, PVector end) {
-        PVector axis = PVector.sub(end, start);
-        return axis.rotate(HALF_PI).normalize();
-    }
-
-    /**
-     * Returns unit vector in the direction of the vector that goes from
-     * start to end points.
+     * Returns vector in the direction of the vector that goes from
+     * start to end points. Magnitude of the returned vector is the distance
+     * from the point to the line that goes through start and end points.
      *
      * @param start axis vector start position
      * @param end   axis vector end position
@@ -292,7 +279,7 @@ class PolygonTransformer {
         PVector axis = PVector.sub(end, start).rotate(HALF_PI);
         PVector temp = PVector.sub(start, point);
         axis.mult(-sign(PVector.dot(axis, temp)));
-        return axis.normalize();
+        return axis;
     }
 
     /**
