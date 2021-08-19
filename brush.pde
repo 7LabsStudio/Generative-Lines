@@ -81,6 +81,14 @@ void setup() {
     l7.draw(400, 100, 400, 300);
     l7.variance = 2;
     l7.draw(500, 100, 500, 300);
+
+    Line l8 = new Line(DistortType.POINT_BIASED, 30);
+    l8.alpha = 30;
+    l8.relDistCoeff = 0.02;
+    l8.draw(100, 100, 100, 300);
+    l8.bias(width / 2 + 200, height / 2);
+    l8.odd = true;
+    l8.draw(300, 100, 300, 300);
     */
 }
 
