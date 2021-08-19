@@ -57,15 +57,28 @@ All distortion algorithms move the points of the input polygon randomly about th
 - **Vector-biased distortion** - prefers the direction in the direction of some vector
 - **Axis-biased distortion** - prefers the direction of 90° towards some line
 
+<a>![distortion type example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/5.png)</a>
+
 ## Variance
 
 [Variance](https://en.wikipedia.org/wiki/Variance) parameter determines the amount of spread-outness of the random distribution.
-If we use 0 as value of this parameter, we can get shrinking or translating effect if we use point-biased or vector-biased distortion respectively. The following example uses variance value of `0, 0.5, 1, 2`:
+If we use 0 as value of this parameter, combined with biased distortion methods, we can get shrinking or translating effect. The following example uses variance value of `0, 0.5, 1, 2`:
 
 <a>![variance example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/4.png)</a>
 
 ## Distance coefficient
 
-When distortion algorithm implies moving the point `A` towards some other point `B`, `distance coefficient` is the number that determines how much this point is moved, relative to the distance between these two points. This number will probably always be some small number, e.g. 1/10, 1/100, 1/1000 etc.
+When distortion algorithm implies prefered direction of movement of points, `distance coefficient` is the number that determines how far from their original position the points are moved in the prefered direction. There are 2 kinds of distance coefficients:
 
-# Examples
+1. **absolute distance coefficient** - used when the movement is in particular direction and not _towards_ some object
+2. **relative distance coefficient** - used when the movement is _towards_ some object, e.g. point or line
+
+## Odd parameter
+
+If this parameter is set to `true`, only the newly added points in polygons are moved, while the ones that were in the previous polygon stay fixed. This type of transformation can produce some interesting effects when combined with biased distortion methods.
+
+## Other parameters
+
+- **alpha** - alpha value of the single polygon layer
+- **depth** - number of polygon layers
+- **lineWidth** - width of the initial rectangle
