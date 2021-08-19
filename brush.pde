@@ -5,7 +5,7 @@ void setup() {
     noStroke();
 
     // Example #1
-    Line l1 = new Line(DistortType.GAUSSIAN, 10);
+    Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
     l1.alpha = 30;
     l1.draw(200, 100, 200, 500);
@@ -14,7 +14,7 @@ void setup() {
     l1.draw(495, 100, 200, 100);
 
     // Example #2
-    Line l2 = new Line(DistortType.GAUSSIAN_BIASED, 25);
+    Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
     l2.alpha = 10;
     l2.distCoeff = 0.02;
@@ -27,14 +27,14 @@ void setup() {
     l2.draw(300, 300, 350, 450);
     
     // Example #3
-    Line l3 = new Line(DistortType.GAUSSIAN, 250);
+    Line l3 = new Line(DistortType.UNIFORM, 250);
     l3.variance = 10;
     l3.alpha = 10;
     l3.odd = true;
     l3.draw(350, 100, 350, 500);
     
     // Example #4
-    Line l4 = new Line(DistortType.DRIFT, 30);
+    Line l4 = new Line(DistortType.VECTOR_BIASED, 30);
     l4.distCoeff = -7;
     l4.alpha = 30;
     // Left "eye" is drawn with odd == false, and the right with odd == true.
@@ -45,7 +45,7 @@ void setup() {
     l4.draw(400, 220, 410, 210);
 
     // Example #5
-    Line l5 = new Line(DistortType.AXIS_SHRINK, 60);
+    Line l5 = new Line(DistortType.AXIS_BIASED, 60);
     l5.distCoeff = 5;
     l5.variance = 2;
     l5.alpha = 30;

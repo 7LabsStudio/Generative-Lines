@@ -23,31 +23,31 @@ class Line {
     
     private Polygon transform(Polygon p) {
         switch (this.distortType) {
-            case GAUSSIAN:
+            case UNIFORM:
                 return this.odd ?
-                    pt.gaussianDistortOdd(p, variance) :
-                    pt.gaussianDistort(p, variance);
-            case GAUSSIAN_BIASED:
+                    pt.uniformDistortOdd(p, variance) :
+                    pt.uniformDistort(p, variance);
+            case POINT_BIASED:
                 if (bias == null) {
                     throw new NullPointerException("Bias point cannot be null.");
                 }
                 return this.odd ?
-                    pt.gaussianDistortOdd(p, variance, bias, distCoeff) :
-                    pt.gaussianDistort(p, variance, bias, distCoeff);
-            case DRIFT:
+                    pt.pointBiasedDistortOdd(p, variance, bias, distCoeff) :
+                    pt.pointBiasedDistort(p, variance, bias, distCoeff);
+            case VECTOR_BIASED:
                 if (axisStart == null || axisEnd == null) {
                     throw new NullPointerException("Axis endpoint cannot be null.");
                 }
                 return this.odd ?
-                    pt.driftDistortOdd(p, variance, distCoeff, axisStart, axisEnd) :
-                    pt.driftDistort(p, variance, distCoeff, axisStart, axisEnd);
-            case AXIS_SHRINK:
+                    pt.vectorBiasedDistortOdd(p, variance, distCoeff, axisStart, axisEnd) :
+                    pt.vectorBiasedDistort(p, variance, distCoeff, axisStart, axisEnd);
+            case AXIS_BIASED:
                 if (axisStart == null || axisEnd == null) {
                     throw new NullPointerException("Axis endpoint cannot be null.");
                 }
                 return this.odd ?
-                    pt.shrinkAlongAxisOdd(p, variance, distCoeff, axisStart, axisEnd) :
-                    pt.shrinkAlongAxis(p, variance, distCoeff, axisStart, axisEnd);
+                    pt.axisBiasedDistortOdd(p, variance, distCoeff, axisStart, axisEnd) :
+                    pt.axisBiasedDistort(p, variance, distCoeff, axisStart, axisEnd);
             default:
                return p; 
         }

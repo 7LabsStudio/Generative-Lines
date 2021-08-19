@@ -1,13 +1,11 @@
 int MAX_VERTICES = 100000;
 
 /*
- * Class that contains methods for stochastic and deterministic
- * polygon transformations.
+ * Class that contains methods for polygon transformations.
  * 
  * If the name of the method ends with Odd, it means
  * that the points from the original polygon are fixed, and the only
- * points that move are the ones newly inserted into the polygon,
- * since this type of transformation can produce interesting effects.
+ * points that move are the ones newly inserted into the polygon.
  * 
  * Design decision: Since the rendering of polygons occurs only
  * after all polygons are pushed on stack, all methods in this
@@ -20,19 +18,24 @@ int MAX_VERTICES = 100000;
  * way. If these get numerous in the future, they could be put into
  * a separate class.
  */
-
+ 
 class PolygonTransformer {
+    // FIXME: The operation of adding points to a polygon should be separated
+    // from the distortion operations.
+
     /**
      * Distorts a polygon in such way that it adds a new point in
      * the middle of every polygon side, and then moves all points
-     * around by adding a gaussian random number with given variances
+     * around by adding a gaussian random number with given variance
      * to its x and y coordinates.
+     * This type of distort moves all points in random directions,
+     * without any preference for one direction over another.
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
      * @return          distorted polygon
      */    
-    Polygon gaussianDistort(Polygon p, float variance) {
+    Polygon uniformDistort(Polygon p, float variance) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -46,15 +49,17 @@ class PolygonTransformer {
 
     /**
      * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves only new
-     * points by adding a gaussian random number with given
-     * variance to its x and y coordinates.
+     * the middle of every polygon side, and then moves only new points
+     * around by adding a gaussian random number with given variance
+     * to its x and y coordinates.
+     * This type of distort moves all points in random directions,
+     * without any preference for one direction over another.
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
      * @return          distorted polygon
      */    
-    Polygon gaussianDistortOdd(Polygon p, float variance) {
+    Polygon uniformDistortOdd(Polygon p, float variance) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -82,7 +87,7 @@ class PolygonTransformer {
      * @param distCoeff amount of preference towards the bias point
      * @return          distorted polygon
      */    
-    Polygon gaussianDistort(Polygon p, float variance, PVector bias, float distCoeff) {
+    Polygon pointBiasedDistort(Polygon p, float variance, PVector bias, float distCoeff) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -111,7 +116,7 @@ class PolygonTransformer {
      * @param distCoeff amount of preference towards the bias point
      * @return          distorted polygon
      */    
-    Polygon gaussianDistortOdd(Polygon p, float variance, PVector bias, float distCoeff) {
+    Polygon pointBiasedDistortOdd(Polygon p, float variance, PVector bias, float distCoeff) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -142,7 +147,7 @@ class PolygonTransformer {
      * @param end       end of the axis vector
      * @return          distorted polygon
      */    
-    Polygon driftDistort(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon vectorBiasedDistort(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -173,7 +178,7 @@ class PolygonTransformer {
      * @param end       end of the axis vector
      * @return          distorted polygon
      */    
-    Polygon driftDistortOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon vectorBiasedDistortOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -204,7 +209,7 @@ class PolygonTransformer {
      * @param end       end of the axis vector
      * @return          distorted polygon
      */    
-    Polygon shrinkAlongAxis(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon axisBiasedDistort(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -235,7 +240,7 @@ class PolygonTransformer {
      * @param end       end of the axis vector
      * @return          distorted polygon
      */    
-    Polygon shrinkAlongAxisOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
+    Polygon axisBiasedDistortOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector midpoint;
         for (int i = 0; i < p.size(); ++i) {
@@ -248,30 +253,6 @@ class PolygonTransformer {
         return new Polygon(output);
     }
 
-   /**
-    * Stochastically shrinks a polygon towards the bias point.
-    * If the variance is 0, then it just shrinks the polygon.
-    *
-    * @param p              input polygon
-    * @param variance       gaussian distribution variance
-    * @param bias           bias point
-    * @param shrinkCoeff    amount of preference towards the
-    *                       bias vector
-    * @return          distorted polygon
-    */
-   Polygon shrinkDistort(Polygon p, float variance, PVector bias, float shrinkCoeff) {
-       ArrayList<PVector> output = new ArrayList<PVector>();
-       for (PVector v: p.getVertices()) {
-           output.add(
-               disturbPoint(
-                   (new PVector(v.x, v.y)).add(PVector.sub(bias, v).mult(shrinkCoeff/100)),
-                   variance
-                )
-            );
-       }
-       return new Polygon(output);
-   }
-   
    /**
     * Changes the input point by adding random gaussian numbers to its x and y
     * coordinates.
@@ -342,9 +323,8 @@ float sign(float x) {
  * Enum that contains various ways of distorting a polygon.
  */
 enum DistortType {
-    GAUSSIAN,
-    GAUSSIAN_BIASED,
-    DRIFT,
-    SHRINK,
-    AXIS_SHRINK
+    UNIFORM,
+    POINT_BIASED,
+    VECTOR_BIASED,
+    AXIS_BIASED
 }
