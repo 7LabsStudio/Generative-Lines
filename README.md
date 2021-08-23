@@ -77,6 +77,10 @@ When distortion algorithm implies prefered direction of movement of points, `dis
 
 If this parameter is set to `true`, only the newly added points in polygons are moved, while the ones that were in the previous polygon stay fixed. This type of transformation can produce some interesting effects when combined with biased distortion methods.
 
+<a>![odd parameter example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/6.png)</a>
+
+As seen from the above example, turning on the `odd` flag makes the trail lines more sharp, since those points do not move once they settle at one location.
+
 ## Other parameters
 
 - **alpha** - alpha value of the single polygon layer
