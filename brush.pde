@@ -103,6 +103,7 @@ void setup() {
     l8.odd = true;
     l8.draw(300, 100, 300, 300);
     
+    // Alpha example
     Line l9 = new Line(DistortType.ROTATIONAL, 50);
     l9.distCoeff = 6;
     l9.bias(350, 200);
@@ -114,7 +115,21 @@ void setup() {
     l9.draw(400, 100, 400, 300);
     l9.alpha = 10;
     l9.draw(550, 100, 550, 300);
+    
+    // Depth example
+    Line l10 = new Line(DistortType.ROTATIONAL, 50);
+    l10.distCoeff = 6;
+    l10.bias(350, 200);
+    l10.alpha = 40;
+    l10.draw(100, 100, 100, 300);
+    l10.depth = 10;
+    l10.draw(250, 100, 250, 300);
+    l10.depth = 7;
+    l10.draw(400, 100, 400, 300);
+    l10.depth = 3;
+    l10.draw(550, 100, 550, 300);
     */
+
 }
 
 void draw() {}
