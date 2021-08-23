@@ -2,21 +2,35 @@ int MAX_VERTICES = 100000;
 
 /*
  * Class that contains methods for polygon transformations.
+ * Currently all polygons are distorted in such way that
+ * a new point is added in the middle of every polygon side,
+ * and then the points (all or just some of them) are moved
+ * around by adding a gaussian random number with given variance
+ * to their x and y coordinates.
+ *
+ * Distort methods differ in the prefered way of moving these
+ * points. Some methods don't have a prefered direction,
+ * others prefer to move towards a point, in the direction
+ * of a vector, around some axis etc.
+ *
+ * The amount of preference is determined by 2 fields: distance
+ * coefficient and relative-mode.
+ * If relative-mode is on, then the amount of preference depends
+ * on the position of a point relative to some other vector/point.
+ * Otherwise, all points are moved by the same absolute amount.
+ * Absolute/relative amounts of displacement are determined by
+ * the distance coefficient.
  * 
- * If the name of the method ends with Odd, it means
- * that the points from the original polygon are fixed, and the only
- * points that move are the ones newly inserted into the polygon.
- * 
+ * If the field odd == true, it means that the points from the
+ * original polygon are fixed, and the only points that move
+ * are the ones newly inserted into the polygon.
+ * This mode can add nice textures to lines.
+ *
  * Design decision: Since the rendering of polygons occurs only
  * after all polygons are pushed on stack, all methods in this
  * class return a list of completely new points, ie. points
  * from the input polygon aren't reused, even if the points with
  * same coordinates occur in the output polygon.
- *
- * Potential FIXME: This class also contains helper methods for
- * manipulating points and getting vectors oriented in a particular
- * way. If these get numerous in the future, they could be put into
- * a separate class.
  */
  
 class PolygonTransformer {
@@ -24,287 +38,183 @@ class PolygonTransformer {
     // from the distortion operations.
 
     /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves all points
-     * around by adding a gaussian random number with given variance
-     * to its x and y coordinates.
-     * This type of distort moves all points in random directions,
+     * This type of distort moves points in random directions,
      * without any preference for one direction over another.
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
+     * @odd             odd-mode flag, see class description
      * @return          distorted polygon
      */    
-    Polygon uniformDistort(Polygon p, float variance) {
+    Polygon uniformDistort(Polygon p, float variance, boolean odd) {
         ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
+        PVector temp;
         for (int i = 0; i < p.size(); ++i) {
-            output.add(disturbPoint(new PVector(p.get(i).x, p.get(i).y), variance));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
+            temp = new PVector(p.get(i).x, p.get(i).y);
+            output.add(odd ? temp : disturbPoint(temp, variance));
+
+            temp = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
+            temp = disturbPoint(temp, variance);
+            output.add(temp);
         }
         return new Polygon(output);
     }
 
     /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves only new points
-     * around by adding a gaussian random number with given variance
-     * to its x and y coordinates.
-     * This type of distort moves all points in random directions,
-     * without any preference for one direction over another.
-     *
-     * @param p         input polygon
-     * @param variance  gaussian distribution variance
-     * @return          distorted polygon
-     */    
-    Polygon uniformDistortOdd(Polygon p, float variance) {
-        ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
-        for (int i = 0; i < p.size(); ++i) {
-            output.add(new PVector(p.get(i).x, p.get(i).y));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
-        }
-        return new Polygon(output);
-    }
-
-    /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves all points
-     * around by adding a gaussian random number with given variances
-     * to its x and y coordinates, but the prefered direction of
-     * displacement is towards the bias point. The ammount of
-     * preference to the bias point is determined by the distCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
+     * This type of distort moves points in random directions,
+     * but the prefered direction of displacement is towards the
+     * bias point. 
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
      * @param bias      bias point
      * @param distCoeff amount of preference towards the bias point
+     * @relative        relative-mode flag, see class description
+     * @odd             odd-mode flag, see class description
      * @return          distorted polygon
      */    
-    Polygon pointBiasedDistort(Polygon p, float variance, PVector bias, float distCoeff) {
+    Polygon pointBiasedDistort(
+                Polygon p,
+                float variance,
+                PVector bias,
+                float distCoeff,
+                boolean relative,
+                boolean odd
+    ) {
         ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
+        PVector temp;
         for (int i = 0; i < p.size(); ++i) {
-            output.add(disturbPoint(new PVector(p.get(i).x, p.get(i).y), variance));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(PVector.sub(bias, midpoint).mult(distCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
+            temp = new PVector(p.get(i).x, p.get(i).y);
+            output.add(odd ? temp : disturbPoint(temp, variance));
+
+            temp = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
+            if (relative) {
+                temp.add(PVector.sub(bias, temp).mult(distCoeff));
+            } else {
+                temp.add(PVector.sub(bias, temp).setMag(distCoeff));
+            }
+            temp = disturbPoint(temp, variance);
+            output.add(temp);
         }
         return new Polygon(output);
     }
 
     /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves only new points
-     * by adding a gaussian random number with given variances to its
-     * x and y coordinates, but the prefered direction of displacement
-     * is towards the bias point. The ammount of preference to the
-     * bias point is determined by the distCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
+     * This type of distort moves points in random directions,
+     * but the prefered direction of displacement is in the
+     * direction of the bias vector.
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
-     * @param bias      bias point
-     * @param distCoeff amount of preference towards the bias point
-     * @return          distorted polygon
-     */    
-    Polygon pointBiasedDistortOdd(Polygon p, float variance, PVector bias, float distCoeff) {
-        ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
-        for (int i = 0; i < p.size(); ++i) {
-            output.add(new PVector(p.get(i).x, p.get(i).y));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(PVector.sub(bias, midpoint).mult(distCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
-        }
-        return new Polygon(output);
-    }
-
-    /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves all points
-     * around by adding a gaussian random number with given variances
-     * to its x and y coordinates, but the prefered direction of
-     * displacement is in the direction of a vector perpendicular to the
-     * vector from start to end. The ammount of preference to the bias
-     * point is determined by the biasCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
-     *
-     * @param p         input polygon
-     * @param variance  gaussian distribution variance
-     * @param biasCoeff amount of preference along the bias vector
      * @param direction direction in which the points are to be biased
+     * @param distCoeff amount of preference along the bias vector
+     * @relative        relative-mode flag, see class description
+     * @odd             odd-mode flag, see class description
      * @return          distorted polygon
      */    
-    Polygon vectorBiasedDistort(Polygon p, float variance, PVector direction, float biasCoeff) {
+    Polygon vectorBiasedDistort(
+                Polygon p,
+                float variance,
+                PVector direction,
+                float distCoeff,
+                boolean relative,
+                boolean odd
+    ) {
         ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
+        PVector temp;
         for (int i = 0; i < p.size(); ++i) {
-            output.add(disturbPoint(new PVector(p.get(i).x, p.get(i).y), variance));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(direction.setMag(biasCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
+            temp = new PVector(p.get(i).x, p.get(i).y);
+            output.add(odd ? temp : disturbPoint(temp, variance));
+
+            temp = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
+            if (relative) {
+                temp.add(direction.mult(distCoeff));
+            } else {
+                temp.add(direction.setMag(distCoeff));
+            }
+            temp = disturbPoint(temp, variance);
+            output.add(temp);
         }
         return new Polygon(output);
     }
 
     /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves only those points
-     * around by adding a gaussian random number with given variances
-     * to its x and y coordinates, but the prefered direction of
-     * displacement is in the direction of a vector perpendicular to the
-     * vector from start to end. The ammount of preference to the bias
-     * point is determined by the biasCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
+     * This type of distort moves points in random directions,
+     * but the prefered direction of displacement is rotation 
+     * around the bias point.
      *
      * @param p         input polygon
      * @param variance  gaussian distribution variance
+     * @param center    center of rotation
      * @param biasCoeff amount of preference along the bias vector
-     * @param start     beginning of the axis vector
-     * @param end       end of the axis vector
+     * @relative        relative-mode flag, see class description
+     * @odd             odd-mode flag, see class description
      * @return          distorted polygon
-     */    
-    Polygon vectorBiasedDistortOdd(Polygon p, float variance, PVector direction, float biasCoeff) {
-        ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
-        for (int i = 0; i < p.size(); ++i) {
-            output.add(new PVector(p.get(i).x, p.get(i).y));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(direction.setMag(biasCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
-        }
-        return new Polygon(output);
-    }
-
-    /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves all points
-     * around by adding a gaussian random number with given variances
-     * to its x and y coordinates, but the prefered direction of
-     * displacement is in the direction of an axis vector that goes
-     * from start to end vectors. The ammount of preference to the bias
-     * point is determined by the biasCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
-     *
-     * @param p         input polygon
-     * @param variance  gaussian distribution variance
-     * @param biasCoeff amount of preference towards the bias vector
-     * @param start     beginning of the axis vector
-     * @param end       end of the axis vector
-     * @return          distorted polygon
-     */    
-    Polygon axisBiasedDistort(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
-        ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
-        for (int i = 0; i < p.size(); ++i) {
-            output.add(disturbPoint(new PVector(p.get(i).x, p.get(i).y), variance));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(getVectorTowardsLine(midpoint, start, end).mult(biasCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
-        }
-        return new Polygon(output);
-    }
-
-    /**
-     * Distorts a polygon in such way that it adds a new point in
-     * the middle of every polygon side, and then moves only those 
-     * points by adding a gaussian random number with given variances
-     * to its x and y coordinates, but the prefered direction of
-     * displacement is in the direction of an axis vector that goes
-     * from start to end vectors. The ammount of preference to the bias
-     * point is determined by the biasCoeff.
-     * The distCoeff scales the vector from the current point to the bias
-     * point, and then adds it to the current point.
-     *
-     * @param p         input polygon
-     * @param variance  gaussian distribution variance
-     * @param biasCoeff amount of preference towards the bias vector
-     * @param start     beginning of the axis vector
-     * @param end       end of the axis vector
-     * @return          distorted polygon
-     */    
-    Polygon axisBiasedDistortOdd(Polygon p, float variance, float biasCoeff, PVector start, PVector end) {
-        ArrayList<PVector> output = new ArrayList<PVector>();
-        PVector midpoint;
-        for (int i = 0; i < p.size(); ++i) {
-            output.add(new PVector(p.get(i).x, p.get(i).y));
-            midpoint = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
-            midpoint.add(getVectorTowardsLine(midpoint, start, end).mult(biasCoeff));
-            disturbPoint(midpoint, variance);
-            output.add(midpoint);
-        }
-        return new Polygon(output);
-    }
-
-   /**
-    * Changes the input point by adding random gaussian numbers to its x and y
-    * coordinates.
-    *
-    * @param point      input polygon
-    * @param variance   gaussian distribution variance
-    * @return           input point with changed position
-    */
-    PVector disturbPoint(PVector point, float variance) {
-        point.x += randomGaussian() * variance;
-        point.y += randomGaussian() * variance;
-        return point;
-    }
-
-    /**
-     * Returns vector in the direction of the vector that goes from
-     * start to end points. Magnitude of the returned vector is the distance
-     * from the point to the line that goes through start and end points.
-     *
-     * @param start axis vector start position
-     * @param end   axis vector end position
-     * @return      unit vector perpendicular to end - start
      */
-    PVector getVectorTowardsLine(PVector start, PVector end, PVector point) {
-        PVector axis = PVector.sub(end, start).rotate(HALF_PI);
-        PVector temp = PVector.sub(start, point);
-        axis.mult(-sign(PVector.dot(axis, temp)));
-        return axis;
+    Polygon rotationalDistort(
+            Polygon p,
+            float variance,
+            PVector center,
+            float intensity,
+            boolean odd,
+            boolean relative
+    ) {
+        ArrayList<PVector> output = new ArrayList<PVector>();
+        PVector temp;
+        for (int i = 0; i < p.size(); ++i) {
+            temp = new PVector(p.get(i).x, p.get(i).y);
+            output.add(odd ? temp : disturbPoint(temp, variance));
+
+            temp = getMidpoint(p.get(i), p.get((i + 1) % p.size()));
+            temp = rotatePoint(temp, center, intensity, relative);
+            temp = disturbPoint(temp, variance);
+            output.add(temp);
+        }
+        return new Polygon(output);
     }
-
-    /**
-     * Returns point that is in the middle of the line connecting the two input points.
-
-     * @param start start position
-     * @param end   end position
-     * @return      middle point
-     */
-    PVector getMidpoint(PVector start, PVector end) {
-        PVector temp = PVector.sub(end, start).mult(0.5);
-        return PVector.add(start, temp);
+}
+    
+/**
+ * Returns point that represents input point rotated around the center point.
+ *
+ * @param point     point to be rotated
+ * @param center    center of rotation
+ * @param intensity amount of displacement
+ * @relative        relative-mode flag, see class description
+ * @return          rotated point
+ */
+PVector rotatePoint(PVector point, PVector center, float intensity, boolean relative) {
+    if (relative) {
+        return PVector.add(point, PVector.sub(point, center).rotate(HALF_PI).mult(intensity));
+    } else {
+        return PVector.add(point, PVector.sub(point, center).rotate(HALF_PI).setMag(intensity));
     }
-
 }
 
 /**
- * Determines the sign of input number.
+ * Returns point that is in the middle of the line connecting the two input points.
  *
- * @param x input number
- * @return  -1 if x is negative, 1 if x is positive
+ * @param start start position
+ * @param end   end position
+ * @return      middle point
  */
-float sign(float x) {
-    return x > 0 ? 1 : -1;
+PVector getMidpoint(PVector start, PVector end) {
+    PVector temp = PVector.sub(end, start).mult(0.5);
+    return PVector.add(start, temp);
 }
+
+/**
+* Returns a point that is at a random place somewhere in the neighborhood
+* of the input point.
+*
+* @param point      input point
+* @param variance   gaussian distribution variance
+* @return           point with changed position
+*/
+PVector disturbPoint(PVector point, float variance) {
+    return new PVector(point.x + randomGaussian() * variance, point.y + randomGaussian() * variance);
+}
+
 
 /**
  * Enum that contains various ways of distorting a polygon.
@@ -313,5 +223,5 @@ enum DistortType {
     UNIFORM,
     POINT_BIASED,
     VECTOR_BIASED,
-    AXIS_BIASED
+    ROTATIONAL
 }
