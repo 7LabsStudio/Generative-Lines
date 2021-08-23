@@ -4,6 +4,7 @@ void setup() {
     background(360, 0, 100);
     noStroke();
 
+    /*
     // Example #1
     Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
@@ -13,7 +14,6 @@ void setup() {
     l1.draw(495, 495, 495, 100);
     l1.draw(495, 100, 200, 100);
 
-    /*
     // Example #2
     Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
@@ -102,6 +102,18 @@ void setup() {
     l8.bias(width / 2 + 200, height / 2);
     l8.odd = true;
     l8.draw(300, 100, 300, 300);
+    
+    Line l9 = new Line(DistortType.ROTATIONAL, 50);
+    l9.distCoeff = 6;
+    l9.bias(350, 200);
+    l9.alpha = 100;
+    l9.draw(100, 100, 100, 300);
+    l9.alpha = 40;
+    l9.draw(250, 100, 250, 300);
+    l9.alpha = 20;
+    l9.draw(400, 100, 400, 300);
+    l9.alpha = 10;
+    l9.draw(550, 100, 550, 300);
     */
 }
 
