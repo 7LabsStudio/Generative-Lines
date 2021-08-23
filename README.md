@@ -54,8 +54,8 @@ All distortion algorithms move the points of the input polygon randomly about th
 
 - **Uniform distortion** - no preference for any particular direction
 - **Point-biased distortion** - prefers the direction towards the bias point
-- **Vector-biased distortion** - prefers the direction in the direction of some vector
-- **Axis-biased distortion** - prefers the direction of 90° towards some line
+- **Vector-biased distortion** - prefers the direction along some bias vector
+- **Rotational distortion** - prefers the direction of rotation along some center point
 
 <a>![distortion type example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/5.png)</a>
 
@@ -66,12 +66,16 @@ If we use 0 as value of this parameter, combined with biased distortion methods,
 
 <a>![variance example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/4.png)</a>
 
-## Distance coefficient
+## Distance parameters
 
-When distortion algorithm implies prefered direction of movement of points, `distance coefficient` is the number that determines how far from their original position the points are moved in the prefered direction. There are 2 kinds of distance coefficients:
+#### Distance coefficient
 
-1. **absolute distance coefficient** - used when the movement is in particular direction and not _towards_ some object
-2. **relative distance coefficient** - used when the movement is _towards_ some object, e.g. point or line
+When distortion algorithm entails a prefered direction of movement of points, `distance coefficient` determines how far from their original position the points are moved.
+
+#### Relative
+
+When this parameter is set to `false`, all points are biased for the same amount.
+When this parameter is `true`, the amount of biasing is determined by the position of the point relative to some other vector or point.
 
 ## Odd parameter
 
@@ -81,8 +85,17 @@ If this parameter is set to `true`, only the newly added points in polygons are 
 
 As seen from the above example, turning on the `odd` flag makes the trail lines more sharp, since those points do not move once they settle at one location.
 
-## Other parameters
+## Alpha
 
-- **alpha** - alpha value of the single polygon layer
-- **depth** - number of polygon layers
-- **lineWidth** - width of the initial rectangle
+Alpha parameter sets the alpha value of a single polygon layer.
+Here's an example of varying alpha for values 100, 40, 20, 10.
+
+<a>![alpha example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/7.png)</a>
+
+## Depth
+
+Number of polygon layers
+
+## Line width
+
+Width of the initial rectangle
