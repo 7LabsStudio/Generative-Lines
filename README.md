@@ -77,6 +77,10 @@ When distortion algorithm entails a prefered direction of movement of points, `d
 When this parameter is set to `false`, all points are biased for the same amount.
 When this parameter is `true`, the amount of biasing is determined by the position of the point relative to some other vector or point.
 
+The following example uses `distCoeff` values of `3, 7, 0.05` and `0.1`, with the `relative==false` for the first two examples, and `relative=true` for the other two examples.
+
+<a>![distance parameters example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/11.png)</a>
+
 ## Odd parameter
 
 If this parameter is set to `true`, only the newly added points in polygons are moved, while the ones that were in the previous polygon stay fixed. This type of transformation can produce some interesting effects when combined with biased distortion methods.
