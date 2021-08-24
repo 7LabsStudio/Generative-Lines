@@ -108,3 +108,9 @@ The following example that uses 15, 10, 7 and 4 layers.
 Width of the initial rectangle in pixels. The width of the resulting line will probably be somewhat different from this number, depending on the variance used. The following example uses `lineWidth` values of `50, 20, 10` and `1`.
 
 <a>![odd parameter example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/9.png)</a>
+
+## Threshold
+
+Number of polygon layers, starting from the initial polygon, that will be discarded upon line rendering. Setting this value ti a higher number will bet rid of the polygon-like features of some lines, but will also decrease the opacity of the line. Setting this parameter to `3-4` works nicely in most cases.
+
+<a>![threshold example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/12.png)</a>
