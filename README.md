@@ -111,6 +111,6 @@ Width of the initial rectangle in pixels. The width of the resulting line will p
 
 ## Threshold
 
-Number of polygon layers, starting from the initial polygon, that will be discarded upon line rendering. Setting this value ti a higher number will bet rid of the polygon-like features of some lines, but will also decrease the opacity of the line. Setting this parameter to `3-4` works nicely in most cases.
+Number of polygon layers, starting from the initial polygon, that will be discarded upon line rendering. Setting this value to a higher number will get rid of the polygon-like features of some lines, but will also decrease the opacity of the line. Setting this parameter to `3-4` works nicely in most cases.
 
 <a>![threshold example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/12.png)</a>
