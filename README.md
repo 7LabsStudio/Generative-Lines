@@ -77,6 +77,10 @@ When distortion algorithm entails a prefered direction of movement of points, `d
 When this parameter is set to `false`, all points are biased for the same amount.
 When this parameter is `true`, the amount of biasing is determined by the position of the point relative to some other vector or point.
 
+The following example uses `distCoeff` values of `3, 7, 0.05` and `0.1`, with the `relative==false` for the first two examples, and `relative=true` for the other two examples.
+
+<a>![distance parameters example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/11.png)</a>
+
 ## Odd parameter
 
 If this parameter is set to `true`, only the newly added points in polygons are moved, while the ones that were in the previous polygon stay fixed. This type of transformation can produce some interesting effects when combined with biased distortion methods.
@@ -101,4 +105,12 @@ The following example that uses 15, 10, 7 and 4 layers.
 
 ## Line width
 
-Width of the initial rectangle
+Width of the initial rectangle in pixels. The width of the resulting line will probably be somewhat different from this number, depending on the variance used. The following example uses `lineWidth` values of `50, 20, 10` and `1`.
+
+<a>![odd parameter example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/9.png)</a>
+
+## Threshold
+
+Number of polygon layers, starting from the initial polygon, that will be discarded upon line rendering. Setting this value ti a higher number will bet rid of the polygon-like features of some lines, but will also decrease the opacity of the line. Setting this parameter to `3-4` works nicely in most cases.
+
+<a>![threshold example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/12.png)</a>
