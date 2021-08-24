@@ -23,6 +23,7 @@ color[] palette = {
 };
 
 void drawExamples() {
+    /*
     // Example #1
     Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
@@ -32,7 +33,6 @@ void drawExamples() {
     l1.draw(495, 495, 495, 100);
     l1.draw(495, 100, 200, 100);
 
-    /*
     // Example #2
     Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
@@ -181,6 +181,24 @@ void drawExamples() {
     l12.distCoeff = .1;
     l12.bias(550, 200);
     l12.draw(550, 100, 550, 300);
+    
+    // Threshold example
+    Line l13 = new Line(DistortType.ROTATIONAL, 25);
+    l13.alpha = 40;
+    l13.relative = true;
+    l13.distCoeff = 0.04;
+    l13.threshold = 0;
+    l13.bias(100, 400);
+    l13.draw(100, 100, 100, 300);
+    l13.threshold = 2;
+    l13.bias(250, 400);
+    l13.draw(250, 100, 250, 300);
+    l13.threshold = 4;
+    l13.bias(400, 400);
+    l13.draw(400, 100, 400, 300);
+    l13.threshold = 6;
+    l13.bias(550, 400);
+    l13.draw(550, 100, 550, 300);
     */
 }
 

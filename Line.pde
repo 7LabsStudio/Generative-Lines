@@ -11,7 +11,7 @@ class Line {
     float alpha = 100;
     float variance = 3;
     float distCoeff = 1;
-    int threshold = -1;
+    int threshold = 0;
     int depth = 15;
     boolean relative = false;
     boolean odd = false;
@@ -76,12 +76,12 @@ class Line {
     void draw(float x1, float y1, float x2, float y2) {
         PolygonStack ps = new PolygonStack(this.colour, this.alpha);
         Polygon p = pf.createRectangle(x1, y1, x2, y2, this.lineWidth);
-        if (this.threshold < 0) {
+        if (this.threshold == 0) {
             ps.add(p);
         }
         for (int i = 0; i < this.depth; i++) {
             p = transform(p);
-            if (i >= this.threshold) {
+            if (i >= this.threshold - 1) {
                 ps.add(p);
             }
         }
