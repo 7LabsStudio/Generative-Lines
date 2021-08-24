@@ -156,8 +156,8 @@ class PolygonTransformer {
             float variance,
             PVector center,
             float intensity,
-            boolean odd,
-            boolean relative
+            boolean relative,
+            boolean odd
     ) {
         ArrayList<PVector> output = new ArrayList<PVector>();
         PVector temp;

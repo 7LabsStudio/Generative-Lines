@@ -1,10 +1,28 @@
 void setup() {
-    size(700, 700);
+    size(900, 800);
     colorMode(HSB, 360, 100, 100);
     background(360, 0, 100);
     noStroke();
 
-    /*
+    drawExamples();
+}
+
+void draw() {}
+
+void mousePressed() {
+    if (mouseButton == LEFT) {
+        saveFrame("local/ep####.png");
+    } else if (mouseButton == RIGHT) {
+        background(360, 0, 100);
+        drawExamples();
+    }
+}
+
+color[] palette = {
+    #f18f01, #048ba8, #2e4057, #99c24d, #2f2d2e
+};
+
+void drawExamples() {
     // Example #1
     Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
@@ -14,6 +32,7 @@ void setup() {
     l1.draw(495, 495, 495, 100);
     l1.draw(495, 100, 200, 100);
 
+    /*
     // Example #2
     Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
@@ -128,8 +147,80 @@ void setup() {
     l10.draw(400, 100, 400, 300);
     l10.depth = 3;
     l10.draw(550, 100, 550, 300);
-    */
+    
+    Line l11 = new Line(DistortType.UNIFORM, 50);
+    l11.variance = 1;
+    l11.alpha = 20;
+    l11.draw(100, 100, 100, 300);
+    l11.lineWidth = 20;
+    l11.draw(250, 100, 250, 300);
+    l11.lineWidth = 10;
+    l11.draw(400, 100, 400, 300);
+    l11.lineWidth = 1;
+    l11.draw(550, 100, 550, 300);
 
+    // Butterfly example
+    drawCircle(width / 4, height / 2);
+    drawCircle(width / 2, height / 2);
+    drawCircle(width * 3 / 4, height / 2);
+
+    // Distance parameters
+    Line l12 = new Line(DistortType.ROTATIONAL, 25);
+    l12.alpha = 40;
+    l12.threshold = 2;
+    l12.distCoeff = 3;
+    l12.bias(100, 200);
+    l12.draw(100, 100, 100, 300);
+    l12.distCoeff = 7;
+    l12.bias(250, 200);
+    l12.draw(250, 100, 250, 300);
+    l12.relative = true;
+    l12.distCoeff = .05;
+    l12.bias(400, 200);
+    l12.draw(400, 100, 400, 300);
+    l12.distCoeff = .1;
+    l12.bias(550, 200);
+    l12.draw(550, 100, 550, 300);
+    */
 }
 
-void draw() {}
+void drawCircle(float x, float y) {
+    PVector center = new PVector(x, y);
+    Line l = new Line(DistortType.POINT_BIASED, 30);
+    l.distCoeff = random(4, 7);
+    l.variance = 3;
+    l.alpha = 30;
+    l.threshold = 2;
+    l.bias(x, y);
+    
+    Line body = new Line(DistortType.UNIFORM, 3);
+    body.variance = 0.6;
+    body.alpha = 10;
+
+    PVector startPoint = randomCirclePoint(center, 90);
+    PVector endPoint = rotateAroundPivot(startPoint, center, HALF_PI);
+
+    PVector midStart = rotateAroundPivot(getMidpoint(startPoint, endPoint), center, HALF_PI);
+    l.colour = palette[floor(random(5))];
+    l.draw(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+    
+    startPoint = rotateAroundPivot(endPoint, center, HALF_PI);
+    endPoint = rotateAroundPivot(startPoint, center, HALF_PI);
+
+    PVector midEnd = rotateAroundPivot(getMidpoint(startPoint, endPoint), center, HALF_PI);
+
+    l.draw(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+    body.draw(midStart.x, midStart.y, midEnd.x, midEnd.y);
+}
+
+PVector randomCirclePoint(PVector center, float radius) {
+    float angle = random(2 * PI);
+    return new PVector(center.x + radius * cos(angle), center.y + radius * sin(angle));
+}
+
+PVector rotateAroundPivot(PVector point, PVector pivot, float angle) {
+    PVector output;
+    output = PVector.sub(point, pivot);
+    output.rotate(angle).add(pivot);
+    return output;
+}
