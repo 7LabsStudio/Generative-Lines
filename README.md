@@ -105,4 +105,6 @@ The following example that uses 15, 10, 7 and 4 layers.
 
 ## Line width
 
-Width of the initial rectangle
+Width of the initial rectangle in pixels. The width of the resulting line will probably be somewhat different from this number, depending on the variance used. The following example uses `lineWidth` values of `50, 20, 10` and `1`.
+
+<a>![odd parameter example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/9.png)</a>
