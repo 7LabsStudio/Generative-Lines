@@ -94,7 +94,10 @@ Here's an example of varying alpha for values 100, 40, 20, 10.
 
 ## Depth
 
-Number of polygon layers
+Number of polygon layers. Extra layers make the resulting line have more texture.
+The following example that uses 15, 10, 7 and 4 layers.
+
+<a>![depth example](https://gitlab.com/enverpodgorcevic/ldt/-/raw/master/images/8.png)</a>
 
 ## Line width
 
