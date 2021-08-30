@@ -23,7 +23,6 @@ color[] palette = {
 };
 
 void drawExamples() {
-    /*
     // Example #1
     Line l1 = new Line(DistortType.UNIFORM, 10);
     l1.variance = .5;
@@ -33,6 +32,7 @@ void drawExamples() {
     l1.draw(495, 495, 495, 100);
     l1.draw(495, 100, 200, 100);
 
+    /*
     // Example #2
     Line l2 = new Line(DistortType.POINT_BIASED, 25);
     l2.variance = 1;
